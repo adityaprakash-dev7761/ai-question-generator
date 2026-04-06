@@ -8,10 +8,12 @@ export const protect = async (req, res, next) => {
 
     if (token && token.startsWith("Bearer ")) {
       token = token.split(" ")[1];
+      const jwtSecret = process.env.JWT_SECRET || "secret";
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, jwtSecret);
+      const userId = decoded.id || decoded.userId;
 
-      req.user = await User.findById(decoded.id).select("-password");
+      req.user = await User.findById(userId).select("-password");
 
       next();
     } else {

@@ -1,6 +1,11 @@
 import dotenv from "dotenv";
 dotenv.config();
 
+// Set Google API key early for the Google SDK
+if (process.env.GEMINI_API_KEY) {
+  process.env.GOOGLE_API_KEY = process.env.GEMINI_API_KEY;
+}
+
 import { GoogleGenAI } from "@google/genai";
 import Question from "../models/question-model.js";
 import Session from "../models/session-model.js";
@@ -9,7 +14,17 @@ import {
   questionAnswerPrompt,
 } from "../utils/prompts-util.js";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Initialize at runtime, not at module load
+function getAI() {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error(
+      "GEMINI_API_KEY is not set in environment variables. Please add it to .env",
+    );
+  } // Set the API key in the environment for the Google SDK
+  process.env.GOOGLE_API_KEY = apiKey;
+  return new GoogleGenAI({ apiKey });
+}
 
 // @desc    Generate + SAVE interview questions for a session
 // @route   POST /api/ai/generate-questions
@@ -17,6 +32,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 export const generateInterviewQuestions = async (req, res) => {
   console.log("hi");
   try {
+    const ai = getAI();
     const { sessionId } = req.body; //! read sessionId, not role/experience
 
     if (!sessionId) {
@@ -74,6 +90,9 @@ export const generateInterviewQuestions = async (req, res) => {
 
     if (!Array.isArray(questions)) throw new Error("Response is not an array");
 
+    //! 3. Delete existing questions for this session (clear before adding new ones)
+    await Question.deleteMany({ session: sessionId });
+
     //! 4. save to DB — was completely missing before
     const saved = await Question.insertMany(
       questions.map((q) => ({
@@ -85,13 +104,13 @@ export const generateInterviewQuestions = async (req, res) => {
       })),
     );
 
-    //! 5. attach IDs to session
-    session.questions.push(...saved.map((q) => q._id));
+    //! 5. Replace session.questions with new question IDs
+    session.questions = saved.map((q) => q._id);
     await session.save();
 
     res.status(201).json({ success: true, data: saved });
   } catch (error) {
-    console.error(error);
+    console.error("Generate questions error:", error.message);
     res.status(500).json({
       success: false,
       message: "Failed to generate questions",
@@ -105,6 +124,7 @@ export const generateInterviewQuestions = async (req, res) => {
 // @access  Private
 export const generateConceptExplanation = async (req, res) => {
   try {
+    const ai = getAI();
     const { question } = req.body;
 
     if (!question) {
