@@ -11,16 +11,16 @@ const Footer = () => {
         </div>
         <div>
           <h2 className="font-bold text-xl mb-2">Contact Us</h2>
-          <p>Email: support@aiquestiongen.com</p>
-          <p>Phone: +91 1234567890</p>
-          <p>Address: Your City, India</p>
+          <p>Email: adityaprakash62093@gmail.com</p>
+          <p>Phone: +91 6209142583</p>
+          <p>Address: Noida, India</p>
         </div>
         <div>
           <h2 className="font-bold text-xl mb-2">Follow Us</h2>
           <div className="flex space-x-4 mt-2">
-            <a href="https://facebook.com" target="_blank" rel="noreferrer"><FaFacebook size={24} /></a>
-            <a href="https://linkedin.com" target="_blank" rel="noreferrer"><FaLinkedin size={24} /></a>
-            <a href="https://instagram.com" target="_blank" rel="noreferrer"><FaInstagram size={24} /></a>
+            <a href="https://www.facebook.com/profile.php?id=100014138432067" target="_blank" rel="noreferrer"><FaFacebook size={24} /></a>
+            <a href="https://www.linkedin.com/in/aditya-prakash-92172824b/" target="_blank" rel="noreferrer"><FaLinkedin size={24} /></a>
+            <a href="https://www.instagram.com/adityaprakash7761/?hl=en" target="_blank" rel="noreferrer"><FaInstagram size={24} /></a>
           </div>
         </div>
       </div>
