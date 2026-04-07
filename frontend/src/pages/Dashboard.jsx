@@ -37,7 +37,11 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    fetchSessions();
+    const loadSessions = async () => {
+      await fetchSessions();
+    };
+
+    loadSessions();
   }, []);
 
   return (

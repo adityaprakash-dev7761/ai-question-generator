@@ -19,7 +19,7 @@ function getAI() {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error(
-      "GEMINI_API_KEY is not set in environment variables. Please add it to .env",
+      "GEMINI_API_KEY is not set. Add it to backend/.env or your environment variables.",
     );
   } // Set the API key in the environment for the Google SDK
   process.env.GOOGLE_API_KEY = apiKey;
